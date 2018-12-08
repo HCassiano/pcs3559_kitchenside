@@ -1,20 +1,35 @@
-
+var http = require('http');
 const bodyParser = require("body-parser");
 const socketIO = require('socket.io');
 const express = require('express');
 const path = require('path');
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
-const server = express()
-  .use((req, res) => res.sendFile(INDEX) )
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
-const io = socketIO(server);
+//const socketio = require('socket.io')();
 
-var app = express();
-var request = require('ajax-request');
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+server.listen(PORT);
+/*
+//var server = require('http').Server(express)
+var app = module.exports.app = express();
+//var app = express();
+var server = http.createServer(app);
+var io = require('socket.io').attach(server);  //pass a http.Server instance
+server.listen(PORT);  //listen on port 80
+*/
+//const server = express()
+//  .use((req, res) => res.sendFile(INDEX) )
+//  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+//const io = socketIO(server);
+//var request = require('ajax-request');
 //var http = require('http').Server(app);
 //var io = require('socket.io')(http);
 //const io = socketIO(server);
+
+//setup stuff
 
 var latestOrder = "sem nenhum pedido!";
 var latestOrderID = 1;
@@ -51,9 +66,10 @@ app.get('/orders', function (req, res) {
   	res.send(latestOrder);
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+/*
+app.listen(PORT, function () {
+  console.log('Example app listening on port ' + PORT);
 });
-
+*/
 
 //setInterval(() => io.emit('newOrder', latestOrder), 1000);
