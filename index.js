@@ -1,38 +1,55 @@
-/*
-const cool = require('cool-ascii-faces')
-const express = require('express')
-const path = require('path')
-const PORT = process.env.PORT || 5000
 
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.render('pages/index'))
-  .get('/cool',(req,res) => res.send(cool()))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
-*/
-
-var express = require('express');
-var app = express();
 const bodyParser = require("body-parser");
+const socketIO = require('socket.io');
+const express = require('express');
+const path = require('path');
+const PORT = process.env.PORT || 3000;
+const INDEX = path.join(__dirname, 'index.html');
+const server = express()
+  .use((req, res) => res.sendFile(INDEX) )
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+const io = socketIO(server);
+
+var app = express();
+var request = require('ajax-request');
+//var http = require('http').Server(app);
+//var io = require('socket.io')(http);
+//const io = socketIO(server);
+
+var teste = "sem nenhum pedido!";
 
 // parse application/x-www-form-urlencoded and json
-app.use(bodyParser.urlencoded())
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json({extended: true}));
 
 app.post('/ingredients', function (req, res) {
-  //var ingredients = JSON.parse()
-  var ingredients = req.body.ingredients
+  console.log(req.body);
+  var ingredients = req.body.ingredients; 
+  ingredients = JSON.parse(ingredients)
+  for (var i = 0; i < ingredients.length; i++) {
+      console.log(ingredients[i])
+  }
+  //console.log(ingredients[0])
   var status = "{ " + "\"status\": " + "\"OK\" }"
-  console.log(ingredients)
+  teste = ingredients;
   res.send(status);
 });
 
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  socket.on('disconnect', () => console.log('Client disconnected'));
+});
+
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/orders', function (req, res) {
+  	res.send(teste);
 });
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
+
+setInterval(() => io.emit('newOrder', teste), 1000);
