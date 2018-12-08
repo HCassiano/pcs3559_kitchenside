@@ -16,7 +16,8 @@ var request = require('ajax-request');
 //var io = require('socket.io')(http);
 //const io = socketIO(server);
 
-var teste = "sem nenhum pedido!";
+var latestOrder = "sem nenhum pedido!";
+var latestOrderID = 1;
 
 // parse application/x-www-form-urlencoded and json
 app.use(bodyParser.urlencoded());
@@ -31,7 +32,9 @@ app.post('/ingredients', function (req, res) {
   }
   //console.log(ingredients[0])
   var status = "{ " + "\"status\": " + "\"OK\" }"
-  teste = ingredients;
+  latestOrder = ingredients;
+  io.emit('newOrder', latestOrderID, latestOrder);
+  latestOrderID = latestOrderID + 1;
   res.send(status);
 });
 
@@ -45,11 +48,12 @@ app.get('/', function (req, res) {
 });
 
 app.get('/orders', function (req, res) {
-  	res.send(teste);
+  	res.send(latestOrder);
 });
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
-setInterval(() => io.emit('newOrder', teste), 1000);
+
+//setInterval(() => io.emit('newOrder', latestOrder), 1000);

@@ -1,12 +1,25 @@
+<!DOCTYPE html>
 <html>
-  <body>
-    <p id='server-time'></p>
+<head>
+<style>
+table, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+    <table id='ordersTable'></table>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
-      var el = document.getElementById('server-time');
-      socket.on('newOrder', function(timeString) {
-        el.innerHTML = timeString;
+      var el = document.getElementById('orders');
+      socket.on('newOrder', function(latestOrderID,latestOrder) {
+        var ordersTable = document.getElementById("ordersTable");
+        var row = ordersTable.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        cell1.innerHTML = latestOrderID;
+        cell2.innerHTML = latestOrder;
       });
     </script>
   </body>
